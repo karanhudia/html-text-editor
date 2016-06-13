@@ -1,0 +1,13 @@
+.container {
+	margin: auto;
+	width: 816px;
+	height: 1056px;
+	background-color: white;
+	border: 2px solid gray;
+	box-shadow: 3px 5px 5px gray;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+.new-line-relative {
+	position: relative;
+}
