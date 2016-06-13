@@ -29,6 +29,13 @@ $(document).ready(function(){
      	$('.editor-cursor').css('left', leftValue(event, offset));
      	$('.editor-cursor').css('top', cursorPosition(topValue(event, offset)));
      	currentElement = this;
+     	//Getting the current selected character to place the cursor accordingly
+     	var selection = window.getSelection();
+	    var substringBeforeCursor = $(currentElement).text().substring(0, selection.focusOffset);
+	    var substringSpan = '<span class="cursorSpan" style="display:none;">' + substringBeforeCursor + '</span>';
+	    $('.cursorSpan').remove();
+		$('body').append(substringSpan);
+		$('.editor-cursor').css('left', $('.cursorSpan').width() + 15);
 	});
 	$(document).keydown(function(e){
 		if(e.keyCode==32) {
