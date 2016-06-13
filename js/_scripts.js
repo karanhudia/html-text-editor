@@ -31,12 +31,28 @@ $(document).ready(function(){
      	currentElement = this;
 	});
 	$(document).keydown(function(e){
+		if(e.keyCode==32) {
+			e.preventDefault();
+		}
 		console.log(e.key);
-		if(e.key == 'Enter') {
-			$(currentElement).parent().after('<div class="new-line-relative"><span></span><span class="font-16">I am awesome.</span></div>');
+		if(e.keyCode == 13) {
+			$(currentElement).parent().after('<div class="new-line-relative"><span class="font-16"></span></div>');
+			currentElement = $(currentElement).parent().next().children();
+			cursorLastPosition = cursorLastPosition + 18;
+			$('div.editor-cursor').remove();
 			$('.editor-container').append('<div class="editor-cursor"></div>');
 	     	$('.editor-cursor').css('left', 15);
-	     	$('.editor-cursor').css('top', (cursorLastPosition + 18));
+	     	$('.editor-cursor').css('top', cursorLastPosition);
+		}
+		else if(e.keyCode == 8) {
+			$(currentElement).text(function(i,v){
+			   return v.slice(0,-1);
+			});
+			$('.editor-cursor').css('left', $(currentElement).width() + 15);
+		}
+		else {
+			$(currentElement).append(e.key);
+			$('.editor-cursor').css('left', $(currentElement).width() + 15);
 		}
 	});
 });
