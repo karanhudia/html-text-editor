@@ -6,6 +6,7 @@ $(document).ready(function(){
 	for(total=16; total<=1056; total=total+18) {
 		topSizes.push(total);
 	}
+	var currentElement = document;
 	var cursorLastPosition = 0;
 	var leftValue = function(e, offset) {
 		return (e.pageX - offset.left);
@@ -27,11 +28,12 @@ $(document).ready(function(){
      	$('.editor-container').append('<div class="editor-cursor"></div>');
      	$('.editor-cursor').css('left', leftValue(event, offset));
      	$('.editor-cursor').css('top', cursorPosition(topValue(event, offset)));
+     	currentElement = this;
 	});
-	$('.font-16').keydown(function(e){
+	$(document).keydown(function(e){
 		console.log(e.key);
 		if(e.key == 'Enter') {
-			$(this).append('<div class="new-line-relative"><span></span><span class="font-16"></span></div>');
+			$(currentElement).parent().after('<div class="new-line-relative"><span></span><span class="font-16">I am awesome.</span></div>');
 			$('.editor-container').append('<div class="editor-cursor"></div>');
 	     	$('.editor-cursor').css('left', 15);
 	     	$('.editor-cursor').css('top', (cursorLastPosition + 18));
