@@ -93,7 +93,7 @@ $(document).ready(function(){
 	//Method to set currentElement span's properties
 	var setTextAndLength = function() {
 		currentElementText = $(currentElement).text();
-		currentElementLength = currentElementText.length;  //TODO -karanhudia -alternative method to get length from selection
+		currentElementLength = currentElementText.length;  //TODO - alternative method to get length from selection
 	}
 
 	//Event listeners for handling keyboard and mouse events
@@ -159,10 +159,10 @@ $(document).ready(function(){
 			else {
 				setCurrentElement($(currentElement).parent().next().children());
 			}
-			setTextAndLength();
 			numberOfCharactersBeforeCursor = 0;
 			numberOfCharactersAfterCursor = currentElementLength - numberOfCharactersBeforeCursor;
 			cursorCurrentTopPosition = cursorCurrentTopPosition + 18;
+			setTextAndLength();
 	     	cursorLeftPosition(true);
 	     	$('.editor-cursor').css('top', cursorCurrentTopPosition);
 		}
