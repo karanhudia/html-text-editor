@@ -34,7 +34,7 @@ $(document).ready(function(){
 	var numberOfCharactersAfterCursor = 0;
 
 	//Appending a div into body to show cursor.
-	var editorCursor = '<div class="editor-cursor"></div>';
+	var editorCursor = '<div class="editor-cursor" style="top:16px; left:15px;"></div>';
 	$('.editor-container').append(editorCursor);
 
 	//Appending a span into body to get the left position of the cursor.
@@ -98,23 +98,34 @@ $(document).ready(function(){
 
 	//Event listeners for handling keyboard and mouse events
 
-	$(document).on('click', '.font-16', function(event){
+	// $(document).on('click', '.font-16', function(event){
+		
+	// });
+	$(document).on('click', '.new-line-relative', function(event){
 		var offset = $('.editor-container').offset();
-     	setCurrentElement(this);
-     	setTextAndLength();
-     	//Getting the current selected character to place the cursor accordingly
-     	var selection = window.getSelection();
-     	//Setting value of numberOfCharactersBeforeCursor
-     	numberOfCharactersBeforeCursor = selection.focusOffset;
-		numberOfCharactersAfterCursor = currentElementLength - numberOfCharactersBeforeCursor;
-     	//Calling methods to set top and left position of cursor
-     	cursorLeftPosition();
-     	cursorTopPosition(event, offset);
+	    setCurrentElement($(this).children());
+	    setTextAndLength();
+
+		if (event.target.className == 'new-line-relative') {	
+	     	//Setting value of numberOfCharactersBeforeCursor & numberOfCharactersAfterCursor
+	     	numberOfCharactersBeforeCursor = currentElementLength;
+			numberOfCharactersAfterCursor = 0;
+		}
+		else if(event.target.className == 'font-16') {
+	     	//Getting the current selected character to place the cursor accordingly
+	     	var selection = window.getSelection();
+	     	//Setting value of numberOfCharactersBeforeCursor
+	     	numberOfCharactersBeforeCursor = selection.focusOffset;
+			numberOfCharactersAfterCursor = currentElementLength - numberOfCharactersBeforeCursor;
+	     }
+	    //Calling methods to set top and left position of cursor
+	    cursorLeftPosition();
+	    cursorTopPosition(event, offset);
+     	event.stopPropagation();
 	});
 	$(document).keydown(function(e){
 		//If case for if key pressed is 'space'.
 		if(e.keyCode==32) {
-			e.preventDefault();
 			e.key = "&nbsp;";
 		}
 		
@@ -169,6 +180,7 @@ $(document).ready(function(){
 
 		//Case for when BACKSPACE is pressed.
 		else if(e.keyCode == 8) {
+			e.preventDefault();
 		    numberOfCharactersBeforeCursor = numberOfCharactersBeforeCursor - 1;
 
 			var substringBeforeCursorAfterDeletion = currentElementText.substring(0, numberOfCharactersBeforeCursor);
