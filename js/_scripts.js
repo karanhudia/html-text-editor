@@ -126,6 +126,7 @@ $(document).ready(function(){
 	$(document).keydown(function(e){
 		//If case for if key pressed is 'space'.
 		if(e.keyCode==32) {
+			e.preventDefault();
 			e.key = "&nbsp;";
 		}
 		
