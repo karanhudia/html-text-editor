@@ -29,3 +29,6 @@
 @keyframes blinker {  
   50% { opacity: 0.0; }
 }
+span {
+	position: relative;
+}

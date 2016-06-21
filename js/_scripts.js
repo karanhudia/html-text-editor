@@ -3,11 +3,11 @@ $(document).ready(function(){
 	//Celeberations
 	console.log('I work');
 
-	//Real Code
-	var topSizes = [];
-	for(total=16; total<=1056; total=total+18) {
-		topSizes.push(total);
-	}
+	//Real 								--karanhudia			-top removed
+	// var topSizes = [];
+	// for(total=16; total<=1056; total=total+18) {
+	// 	topSizes.push(total);
+	// }
 	/**********All font variables**********/
 	
 	//Font size 16px
@@ -33,9 +33,8 @@ $(document).ready(function(){
 	//Variable to keep track of number of characters after the cursor.
 	var numberOfCharactersAfterCursor = 0;
 
-	//Appending a div into body to show cursor.
-	var editorCursor = '<div class="editor-cursor" style="top:16px; left:15px;"></div>';
-	$('.editor-container').append(editorCursor);
+	//Creating a div to show cursor.
+	var editorCursor = '<div class="editor-cursor" style="left:15px;"></div>';
 
 	//Appending a span into body to get the left position of the cursor.
 	var substringSpanForLeftPosition = '<span class="cursorLeftPosition" style="display:none;"></span>';
@@ -60,20 +59,20 @@ $(document).ready(function(){
 		if((ifNew === undefined) || ifNew == false) {
 			var substringBeforeCursor = $(currentElement).text().substring(0, numberOfCharactersBeforeCursor);
 			$('.cursorLeftPosition').html(substringBeforeCursor);
-			$('.editor-cursor').css('left', $('.cursorLeftPosition').width() + editorContainerLeftPadding);
+			$('.editor-cursor').css('left', $('.cursorLeftPosition').width());
 		}
 		else {
 			$('.editor-cursor').css('left', editorContainerLeftPadding);
 		}
 	}
 
-	//Method to set cursors left position
-	var cursorTopPosition = function(event, offset) {
-		var topPixel = topValue(event, offset);
-		topPixel = Math.round(((topPixel - 16)/18));
-		cursorCurrentTopPosition = topSizes[topPixel];
-		$('.editor-cursor').css('top', cursorCurrentTopPosition);
-	};
+	//Method to set cursors top position --karanhudia			--code commented until further research of if top is to be used.
+	// var cursorTopPosition = function(event, offset) {
+	// 	var topPixel = topValue(event, offset);
+	// 	topPixel = Math.round(((topPixel - 16)/18));
+	// 	cursorCurrentTopPosition = topSizes[topPixel];
+	// 	$('.editor-cursor').css('top', cursorCurrentTopPosition);
+	// };
 
 	//Method to get substring upto the given position
 	var substringUpto = function(end) {
@@ -97,30 +96,34 @@ $(document).ready(function(){
 	}
 
 	//Event listeners for handling keyboard and mouse events
-
-	// $(document).on('click', '.font-16', function(event){
-		
-	// });
 	$(document).on('click', '.new-line-relative', function(event){
-		var offset = $('.editor-container').offset();
-	    setCurrentElement($(this).children());
-	    setTextAndLength();
+	    $('.editor-cursor').remove();
 
-		if (event.target.className == 'new-line-relative') {	
+		if (event.target.className == 'new-line-relative') {
+			//Setting the last span child of this parent div as current element on clicking on empty space of that line
+			setCurrentElement($(this).children().filter(':last'));
+			setTextAndLength();
+	    	$(currentElement).append(editorCursor);
+
 	     	//Setting value of numberOfCharactersBeforeCursor & numberOfCharactersAfterCursor
 	     	numberOfCharactersBeforeCursor = currentElementLength;
 			numberOfCharactersAfterCursor = 0;
 		}
 		else if(event.target.className == 'font-16') {
+			//Setting the clicked span as current element
+	     	setCurrentElement(event.target);
+			setTextAndLength();
+			$(currentElement).append(editorCursor);
+
 	     	//Getting the current selected character to place the cursor accordingly
 	     	var selection = window.getSelection();
+
 	     	//Setting value of numberOfCharactersBeforeCursor
 	     	numberOfCharactersBeforeCursor = selection.focusOffset;
 			numberOfCharactersAfterCursor = currentElementLength - numberOfCharactersBeforeCursor;
 	     }
-	    //Calling methods to set top and left position of cursor
+	    //Calling methods to set left position of cursor
 	    cursorLeftPosition();
-	    cursorTopPosition(event, offset);
      	event.stopPropagation();
 	});
 	$(document).keydown(function(e){
