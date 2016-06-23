@@ -3,11 +3,6 @@ $(document).ready(function(){
 	//Celeberations
 	console.log('I work');
 
-	//Real 								--karanhudia			-top removed
-	// var topSizes = [];
-	// for(total=16; total<=1056; total=total+18) {
-	// 	topSizes.push(total);
-	// }
 	/**********All font variables**********/
 	
 	//Font size 16px
@@ -23,9 +18,8 @@ $(document).ready(function(){
 	var currentElementText = '';
 	var currentElementLength = 0;
 
-	//Variable for cursor's current left and top position.
+	//Variable for cursor's current left position.
 	var cursorCurrentLeftPosition = 0;
-	var cursorCurrentTopPosition = 0;
 
 	//Variable to keep track of number of characters before the cursor.
 	var numberOfCharactersBeforeCursor = 0;
@@ -42,14 +36,14 @@ $(document).ready(function(){
 
 
 
-	//Method to return the x co-ordinate on click
-	var leftValue = function(e, offset) {
-		return (e.pageX - offset.left);
-	};
-	//Method to return the y co-ordinate on click
-	var topValue = function(e, offset) {
-		return (e.pageY - offset.top - 8);
-	};
+	// //Method to return the x co-ordinate on click 	--karanhudia		-top removed
+	// var leftValue = function(e, offset) {
+	// 	return (e.pageX - offset.left);
+	// };
+	// //Method to return the y co-ordinate on click
+	// var topValue = function(e, offset) {
+	// 	return (e.pageY - offset.top - 8);
+	// };
 	
 
 	/**********METHODS**********/
@@ -62,17 +56,9 @@ $(document).ready(function(){
 			$('.editor-cursor').css('left', $('.cursorLeftPosition').width());
 		}
 		else {
-			$('.editor-cursor').css('left', editorContainerLeftPadding);
+			$('.editor-cursor').css('left', 0);
 		}
 	}
-
-	//Method to set cursors top position --karanhudia			--code commented until further research of if top is to be used.
-	// var cursorTopPosition = function(event, offset) {
-	// 	var topPixel = topValue(event, offset);
-	// 	topPixel = Math.round(((topPixel - 16)/18));
-	// 	cursorCurrentTopPosition = topSizes[topPixel];
-	// 	$('.editor-cursor').css('top', cursorCurrentTopPosition);
-	// };
 
 	//Method to get substring upto the given position
 	var substringUpto = function(end) {
@@ -92,7 +78,7 @@ $(document).ready(function(){
 	//Method to set currentElement span's properties
 	var setTextAndLength = function() {
 		currentElementText = $(currentElement).text();
-		currentElementLength = currentElementText.length;  //TODO -karanhudia -alternative method to get length from selection
+		currentElementLength = currentElementText.length;
 	}
 
 	//Event listeners for handling keyboard and mouse events
@@ -162,45 +148,86 @@ $(document).ready(function(){
 
 		//Case for when ENTER is pressed.
 		else if(e.keyCode == 13) {
+	    	$('.editor-cursor').remove();
 			$(currentElement).parent().after(fontSize16);
 
 			if(numberOfCharactersAfterCursor) {
+				var nextSpans = $(currentElement).nextAll();
 				var substringBeforeCursor = currentElementText.substring(0, numberOfCharactersBeforeCursor);
 				var substringAfterCursor = currentElementText.substring(numberOfCharactersBeforeCursor , currentElementLength);
+
 				$(currentElement).html(substringBeforeCursor);
 				setCurrentElement($(currentElement).parent().next().children());
 				$(currentElement).html(substringAfterCursor);
+				nextSpans.appendTo($(currentElement).parent());
 			}
 			else {
-				setCurrentElement($(currentElement).parent().next().children());
+				var sameLineSpanExists = $(currentElement).next().is('span');			//Boolean variable to tell if a span exists in the same line, after the current span
+				
+				if(sameLineSpanExists) {
+					var nextSpans = $(currentElement).nextAll();
+
+					setCurrentElement($(currentElement).parent().next().children());
+					nextSpans.appendTo($(currentElement).parent());
+				}
+				else {
+					setCurrentElement($(currentElement).parent().next().children());
+				}
 			}
 			setTextAndLength();
+			$(currentElement).append(editorCursor);
 			numberOfCharactersBeforeCursor = 0;
 			numberOfCharactersAfterCursor = currentElementLength - numberOfCharactersBeforeCursor;
-			cursorCurrentTopPosition = cursorCurrentTopPosition + 18;
 	     	cursorLeftPosition(true);
-	     	$('.editor-cursor').css('top', cursorCurrentTopPosition);
 		}
 
 		//Case for when BACKSPACE is pressed.
 		else if(e.keyCode == 8) {
 			e.preventDefault();
-		    numberOfCharactersBeforeCursor = numberOfCharactersBeforeCursor - 1;
+			$('.editor-cursor').remove();
+		    if(numberOfCharactersBeforeCursor) {
+		    	numberOfCharactersBeforeCursor = numberOfCharactersBeforeCursor - 1;
+				var substringBeforeCursorAfterDeletion = currentElementText.substring(0, numberOfCharactersBeforeCursor);
+				var substringAfterCursor = currentElementText.substring((numberOfCharactersBeforeCursor + 1) , currentElementLength);
+				$(currentElement).html(substringBeforeCursorAfterDeletion + substringAfterCursor);
+				setTextAndLength();
+		    }
+		    else {
+				var sameLineSpanExists = $(currentElement).prev().is('span');			//Boolean variable to tell if a span exists in the same line, before the current span
+		    	var prevLineSpanExists = $(currentElement).parent().prev().is('div');	//Boolean variable to tell if a line exists before the current span
 
-			var substringBeforeCursorAfterDeletion = currentElementText.substring(0, numberOfCharactersBeforeCursor);
-			var substringAfterCursor = currentElementText.substring((numberOfCharactersBeforeCursor + 1) , currentElementLength);
-			$(currentElement).html(substringBeforeCursorAfterDeletion + substringAfterCursor);
-			setTextAndLength();
+		    	if(sameLineSpanExists) {
+		    		setCurrentElement($(currentElement).prev());
+		    		setTextAndLength();
+		    		numberOfCharactersBeforeCursor = currentElementLength - 1;
+		    		var substringBeforeCursorAfterDeletion = currentElementText.substring(0, numberOfCharactersBeforeCursor);
+		    		$(currentElement).html(substringBeforeCursorAfterDeletion);
+		    		setTextAndLength();
+		    		numberOfCharactersAfterCursor = 0;
+		    	}
+		    	else if(prevLineSpanExists) {
+		    		var allSpans = $(currentElement).parent().children();
+		    		setCurrentElement($(currentElement).parent().prev().children().filter(':last'));
+		    		setTextAndLength();
+		    		numberOfCharactersBeforeCursor = currentElementLength;
+		    		numberOfCharactersAfterCursor = 0;
+		    		allSpans.appendTo($(currentElement).parent());
+		    		$(currentElement).parent().next().remove();
+		    	}
+		    }
+		    
+			$(currentElement).append(editorCursor);
 			cursorLeftPosition();
 		}
 		//Case for when entering pressed keyboard keys into the span
-		else if(e.keyCode==32 || (e.keyCode>=48 && e.keyCode<=57) || (e.keyCode>=65 && e.keyCode<=90) || (e.keyCode>=96 && e.keyCode<=105)){
+		else if(e.keyCode==32 || (e.keyCode>=48 && e.keyCode<=57) || (e.keyCode>=65 && e.keyCode<=90) || (e.keyCode>=96 && e.keyCode<=111) || (e.keyCode>=186 && e.keyCode<=192) || (e.keyCode>=219 && e.keyCode<=222)){
 
 			var substringBeforeCursor = currentElementText.substring(0, numberOfCharactersBeforeCursor);
 			var substringAfterCursor = currentElementText.substring(numberOfCharactersBeforeCursor, currentElementLength);
 			$(currentElement).html(substringBeforeCursor+ e.key + substringAfterCursor);
 			numberOfCharactersBeforeCursor = numberOfCharactersBeforeCursor + 1;
 			setTextAndLength();
+			$(currentElement).append(editorCursor);
 			cursorLeftPosition();
 		}
 	});
